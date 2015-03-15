@@ -3,10 +3,9 @@ import os
 import os.path
 import requests
 
-from UserDict import UserDict
-from UserList import UserList
+from collections import (UserDict, UserList)
 
-import pylanets.baseobjects as baseobjects
+from pylanets import baseobjects
 
 BASE_URL = 'http://api.planets.nu'
 API_KEY_FILE = os.path.join(os.environ['HOME'], '.planets.key')
@@ -30,7 +29,8 @@ class GameTurn(UserDict):
         self.owner = owner_player
         self.obj_map = {'planets':   baseobjects.Planet,
                         'starbases': baseobjects.Starbase,
-                        'ships':     baseobjects.Ship}
+                        'ships':     baseobjects.Ship,
+                        'engines':   baseobjects.Engine}
 
     def __getitem__(self, key):
         if key in self.data and isinstance(self.data[key], list):
@@ -41,12 +41,6 @@ class GameTurn(UserDict):
             return Filterable(self.owner['id'], _dat)
         else:
             return UserDict.__getitem__(self, key)
-
-    def player_by_id(self, pid):
-        for p in self.data['players']:
-            if p['id'] == pid:
-                return p
-        return None
 
     def find_component(self, cname, cid):
         try:

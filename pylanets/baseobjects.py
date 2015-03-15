@@ -1,13 +1,13 @@
-from UserDict import UserDict
+from collections import UserDict
 
 
-class BaseObject(object, UserDict):
+class BaseObject(UserDict):
     def __init__(self, turn, data):
         UserDict.__init__(self, data)
         self._turn = turn
         self._fmt_str = None
         if 'ownerid' in self.data:
-            self.data['owner'] = self._turn.player_by_id(self.data['ownerid'])
+            self.data['owner'] = self._turn.find_component('players', self.data['ownerid'])
 
     def __str__(self):
         return self._fmtstr.format(self.data)
@@ -92,3 +92,9 @@ class Ship(BaseObject):
             self.data['name'] = ''
 
         self._fmtstr = 'Ship({0[id]}) [{0[owner_name]}] : {0[hull_name]}, E{0[enginetech]}/B{0[beamtech]}/T{0[torptech]} "{0[name]}"'
+
+
+class Engine(BaseObject):
+    def __init__(self, *args):
+        super(Engine, self).__init__(*args)
+        self._fmtstr = 'Engine({0[id]}) T{0[techlevel]} {0[name]} {0[warp1]}/{0[warp2]}/{0[warp3]}/{0[warp4]}/{0[warp5]}/{0[warp6]}/{0[warp7]}/{0[warp8]}/{0[warp9]}'
