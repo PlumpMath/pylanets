@@ -1,23 +1,36 @@
 import curses
 
 from .. import State
-from .base import (UI, Panel, PanelState)
+from .base import (UI, Panel, BasePanelState)
+
+from pylanets.api import PlanetsApi
+from pylanets.highlevel import Empire
+
 
 class LoadGame(State):
     def run(self, sm):
-        api = PlanetsApi()
-        games = api.active_games()
-        selected = self._games_prompt(games, sm.stdscr)
+        import os.path
+        import pickle
+        if os.path.exists('turn.data'):
+            with open('turn.data', 'rb') as infile:
+                sm.empire = pickle.load(infile)
+        else:
+            api = PlanetsApi()
+            games = api.active_games()
+            selected = self._games_prompt(games, sm.stdscr)
 
-        sm.empire = None
-        if selected is not None:
-            try:
-                sm.stdscr.addstr('Loading {0[name]}'.format(selected))
-                sm.stdscr.refresh()
-                sm.empire = Empire.from_game(selected['id'])
-                sm.game_name = selected['name']
-            except Exception as e:
-                print(e)
+            sm.empire = None
+            if selected is not None:
+                try:
+                    sm.stdscr.addstr('Loading {0[name]}'.format(selected))
+                    sm.stdscr.refresh()
+                    sm.empire = Empire.from_game(selected['id'])
+                    sm.game_name = selected['name']
+                except Exception as e:
+                    print(e)
+
+            with open('turn.data', 'wb') as outfile:
+                pickle.dump(sm.empire, outfile)
 
         return self.next(sm.empire)
 
@@ -67,10 +80,11 @@ class Main(State):
 
         next_wnd = 0
         while next_wnd != None:
+            sm.wnd[next_wnd].next_wnd = next_wnd  # init next_wnd to current wnd index
             next_wnd = sm.wnd[next_wnd].start()
             
 
-class TopLevel(PanelState):
+class TopLevel(BasePanelState):
     def draw(self, sm):
         y = self._hcenter(sm)-3
         x = self._wcenter(sm)-10

@@ -8,5 +8,6 @@ def run_ui():
     curses.wrapper(_start)
 
 def _start(stdscr):
+    curses.curs_set(0)
     curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
     UI(stdscr).start()
