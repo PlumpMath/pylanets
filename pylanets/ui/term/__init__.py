@@ -2,7 +2,7 @@ import curses
 import curses.panel
 
 from .base import (UI)
-from . import (main, fleet)
+from . import (main, fleet, ops)
 
 def run_ui():
     curses.wrapper(_start)

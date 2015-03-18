@@ -6,10 +6,11 @@ def centerstr(wnd, y, txt):
     wc = int(w/2)
     wnd.addstr(y, wc-int(len(txt)/2), txt)
 
-def dialog(title, parent, height, width, lines):
+def dialog(title, parent, width, lines):
     ph,pw = parent.getmaxyx()
     pch = int(ph/2)
     pcw = int(pw/2)
+    height = len(lines)+4
 
     w = parent.derwin(height,width, int(pch-height/2),int(pcw-width/2))
     w.clear()

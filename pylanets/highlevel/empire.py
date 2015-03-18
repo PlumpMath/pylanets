@@ -28,6 +28,12 @@ class Empire(object):
                               'duranium':   0,
                               'tritanium':  0,
                               'molybdenum': 0},
+                'ground':    {'mc':         0,
+                              'supplies':   0,
+                              'neutronium': 0,
+                              'duranium':   0,
+                              'tritanium':  0,
+                              'molybdenum': 0},
                 'total':     {'neutronium': 0,
                               'duranium':   0,
                               'tritanium':  0,
@@ -49,16 +55,16 @@ class Empire(object):
             rsrc['available']['tritanium'] += p['tritanium']
             rsrc['available']['molybdenum'] += p['molybdenum']
 
-            rsrc['total']['neutronium'] += p['groundneutronium']
-            rsrc['total']['duranium'] += p['groundduranium']
-            rsrc['total']['tritanium'] += p['groundtritanium']
-            rsrc['total']['molybdenum'] += p['groundmolybdenum']
+            rsrc['ground']['neutronium'] += p['groundneutronium']
+            rsrc['ground']['duranium'] += p['groundduranium']
+            rsrc['ground']['tritanium'] += p['groundtritanium']
+            rsrc['ground']['molybdenum'] += p['groundmolybdenum']
 
         rsrc['total']['mc'] = rsrc['available']['mc']
         rsrc['total']['supplies'] = rsrc['available']['supplies']
-        rsrc['total']['neutronium'] += rsrc['available']['neutronium']
-        rsrc['total']['duranium'] += rsrc['available']['duranium']
-        rsrc['total']['tritanium'] += rsrc['available']['tritanium']
-        rsrc['total']['molybdenum'] += rsrc['available']['molybdenum']
+        rsrc['total']['neutronium'] = rsrc['available']['neutronium']+rsrc['ground']['neutronium']
+        rsrc['total']['duranium'] = rsrc['available']['duranium']+rsrc['ground']['duranium']
+        rsrc['total']['tritanium'] = rsrc['available']['tritanium']+rsrc['ground']['tritanium']
+        rsrc['total']['molybdenum'] = rsrc['available']['molybdenum']+rsrc['ground']['molybdenum']
 
         return rsrc

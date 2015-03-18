@@ -98,7 +98,8 @@ class TopLevel(BasePanelState):
 
     def next(self, input):
         try:
-            return {'F': Panel.FleetCommand}[input.upper()]
+            return {'F': Panel.FleetCommand,
+                    'O': Panel.OpsCouncil}[input.upper()]
         except KeyError:
             return self
 

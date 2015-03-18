@@ -20,41 +20,52 @@ class FleetCommand(BasePanelState):
         try:
             return {'I': Panel.Fleet_Inventory}[input.upper()]
         except KeyError:
-            return self
+            pass
 
 
 class Inventory(BasePanelState):
     def __init__(self):
         super(Inventory, self).__init__()
         self.ship_filter = None
+        self.expanded = False
 
     def draw(self, sm):
         y,x = (1,1)
         sm.wnd.clear()
         # ship list
         for i,shp in enumerate(filter(self.ship_filter, sm.empire.ships())):
-            sm.wnd.addstr(y,x, '{0:>3}: {1[name]}\n'.format(i+1,shp))
+            sm.wnd.addstr(y,x, '{0:>3}: {1}\n'.format(i+1,shp['hull']['name']))
             y += 1
             if y > self._height(sm)-4:
                 break
+            if self.expanded:
+                if shipfilters.transport(shp):
+                    sm.wnd.addstr(y,x+5, 'N:{0[neutronium]} [D:{0[duranium]},T:{0[tritanium]},M:{0[molybdenum]},S:{0[supplies]},MC:{0[megacredits]}]'.format(shp))
+                y += 1
+                if y > self._height(sm)-4:
+                    break
 
         # input area
         sm.wnd.addstr(self._height(sm)-2,2, 'F', curses.color_pair(1))
         sm.wnd.addstr('/'); sm.wnd.addstr('S', curses.color_pair(1))
+        sm.wnd.addstr('/'); sm.wnd.addstr('E', curses.color_pair(1))
 
         super(Inventory, self).draw(sm)
 
     def next(self, input):
         if input.upper() == 'F':
             self.input_fn = self._input_filter
+        elif input.upper() == 'E':
+            self.expanded = not self.expanded
 
     def _input_filter(self, sm):
-        w = dialog('Filter', sm.wnd, 6, 10, [(' R', curses.color_pair(1), 'ole'),
-                                             (' H', curses.color_pair(1), 'ull')])
+        w = dialog('Filter', sm.wnd, 10, [(' R', curses.color_pair(1), 'ole'),
+                                             (' H', curses.color_pair(1), 'ull'),
+                                             (' N', curses.color_pair(1), 'one')])
         input = w.getkey()
         del w
         if input.upper() == 'R':
-            w = dialog('Filter: Role', sm.wnd, 10, 20,
+            w = dialog('Filter: Role', sm.wnd, 20,
                     [(' C', curses.color_pair(1), 'ombat Vessel'),
                      ('   Lar', 'g', curses.color_pair(1), 'e Warship'),
                      ('   S', 'm', curses.color_pair(1), 'all Warship'),
@@ -73,6 +84,9 @@ class Inventory(BasePanelState):
                                     'P': shipfilters.special}[input.upper()]
             except KeyError:
                 self.ship_filter = None
+
+        elif input.upper() == 'N':
+            self.ship_filter = None
 
         self.input_fn = None
 
