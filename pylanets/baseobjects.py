@@ -98,3 +98,10 @@ class Engine(BaseObject):
     def __init__(self, *args):
         super(Engine, self).__init__(*args)
         self._fmtstr = 'Engine({0[id]}) T{0[techlevel]} {0[name]} {0[warp1]}/{0[warp2]}/{0[warp3]}/{0[warp4]}/{0[warp5]}/{0[warp6]}/{0[warp7]}/{0[warp8]}/{0[warp9]}'
+
+
+class Launcher(BaseObject):
+    def __init__(self, *args):
+        super(Launcher, self).__init__(*args)
+        self.data['cost'] = self.data['launchercost']
+        self._fmtstr = 'Launcher({0[id]}) T{0[techlevel]} {0[name]}, dmg {0[damage]}'

@@ -1,4 +1,4 @@
-class Expense(object):
+class Expense():
     def __init__(self):
         self.megacredits = 0
         self.supplies = 0
@@ -16,6 +16,48 @@ class Expense(object):
         e.tritanium = self.tritanium+expense.tritanium
         e.molybdenum = self.molybdenum+expense.molybdenum
         return e
+
+    def sub(self, expense):
+        e = Expense() 
+        e.megacredits = self.megacredits-expense.megacredits
+        e.supplies = self.supplies-expense.supplies
+        e.neutronium = self.neutronium-expense.neutronium
+        e.duranium = self.duranium-expense.duranium
+        e.tritanium = self.tritanium-expense.tritanium
+        e.molybdenum = self.molybdenum-expense.molybdenum
+        return e
+
+    def over(self):
+        return self.megacredits < 0 or \
+               self.supplies    < 0 or \
+               self.neutronium  < 0 or \
+               self.duranium    < 0 or \
+               self.tritanium   < 0 or \
+               self.molybdenum  < 0
+
+    @property
+    def deficient(self):
+        """ return a list of what resources are < 0 or empty list if none """
+        r = []
+        if self.megacredits < 0:
+            r.append('C')
+        if self.supplies < 0:
+            r.append('S')
+        if self.neutronium < 0:
+            r.append('N')
+        if self.duranium < 0:
+            r.append('D')
+        if self.molybdenum < 0:
+            r.append('M')
+        return r
+
+    def __repr__(self):
+        return 'C{},S{},N{},D{},T{},M{}'.format(self.megacredits,
+                                                self.supplies,
+                                                self.neutronium,
+                                                self.duranium,
+                                                self.tritanium,
+                                                self.molybdenum)
 
 
 class Megacredits(Expense):
@@ -47,3 +89,9 @@ class Molybdenum(Expense):
     def __init__(self, amount):
         super(Molybdenum, self).__init__()
         self.molybdenum = amount
+
+C = Megacredits
+N = Neutronium
+D = Duranium
+T = Tritanium
+M = Molybdenum

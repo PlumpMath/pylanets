@@ -8,7 +8,7 @@ from collections import (UserDict, UserList)
 from pylanets import baseobjects
 
 BASE_URL = 'http://api.planets.nu'
-API_KEY_FILE = os.path.join(os.environ['HOME'], '.planets.key')
+API_KEY_FILE = os.path.join(os.getenv('HOME', '.'), '.planets.key')
 
 
 class Filterable(UserList):
@@ -20,7 +20,10 @@ class Filterable(UserList):
         return [_ for _ in self.data if 'ownerid' in _ and _['ownerid'] == player['raceid']]
 
     def owned(self):
-        return [_ for _ in self.data if 'ownerid' in _ and _['ownerid'] == self._owner_id]
+        return [_ for _ in self.data if 'ownerid' in _ and _['ownerid'] == self._owner_iod]
+
+    def by_tech(self, techlevel):
+        return [_ for _ in self.data if 'techlevel' in _ and _['techlevel'] == techlevel]
 
 
 class GameTurn(UserDict):
@@ -30,10 +33,11 @@ class GameTurn(UserDict):
         self.obj_map = {'planets':   baseobjects.Planet,
                         'starbases': baseobjects.Starbase,
                         'ships':     baseobjects.Ship,
-                        'engines':   baseobjects.Engine}
+                        'engines':   baseobjects.Engine,
+                        'torpedos':  baseobjects.Launcher}
 
     def __getitem__(self, key):
-        if key in self.data and isinstance(self.data[key], list):
+        if self.owner is not None and key in self.data and isinstance(self.data[key], list):
             if key in self.obj_map:
                 _dat = [self.obj_map[key](self, _) for _ in self.data[key]]
             else:
@@ -66,6 +70,7 @@ class PlanetsApi(object):
         if turn is not None:
             dat['turn'] = turn
         turn_data = self._get('/game/loadturn', dat)['rst']
+        owner = None
         for p in turn_data['players']:
             if p['username'] == self._player_data['account']['username']:
                 owner = p
@@ -100,15 +105,15 @@ class PlanetsApi(object):
     def _obtain_api_key(self):
         if os.path.exists(API_KEY_FILE):
             with open(API_KEY_FILE, 'rb') as keyfile:
-                return keyfile.read().strip()
+                return keyfile.read().decode('UTF-8').strip()
         else:
             # prompt for user/password
             print('No key file found: {}'.format(API_KEY_FILE))
             print('\nFetching new key')
-            user = raw_input('\tusername: ')
+            user = input('\tusername: ')
             pwrd = getpass.getpass('\tpassword: ')
 
             key = self._login(user, pwrd)
             with open(API_KEY_FILE, 'wb') as keyfile:
-                keyfile.write(key.strip())
+                keyfile.write(bytes(key.strip(), 'UTF-8'))
             return key

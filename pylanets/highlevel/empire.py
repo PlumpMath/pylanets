@@ -68,3 +68,7 @@ class Empire(object):
         rsrc['total']['molybdenum'] = rsrc['available']['molybdenum']+rsrc['ground']['molybdenum']
 
         return rsrc
+
+    def hulls(self):
+        active = self._turn['player']['activehulls'].split(',')
+        return sorted([_ for _ in self._turn['hulls'] if str(_['id']) in active], key=lambda x:x['techlevel'])
