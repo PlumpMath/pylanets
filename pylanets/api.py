@@ -20,7 +20,7 @@ class Filterable(UserList):
         return [_ for _ in self.data if 'ownerid' in _ and _['ownerid'] == player['raceid']]
 
     def owned(self):
-        return [_ for _ in self.data if 'ownerid' in _ and _['ownerid'] == self._owner_iod]
+        return [_ for _ in self.data if 'ownerid' in _ and _['ownerid'] == self._owner_id]
 
     def by_tech(self, techlevel):
         return [_ for _ in self.data if 'techlevel' in _ and _['techlevel'] == techlevel]
