@@ -10,9 +10,9 @@ print('Empire resources:')
 for k,v in emp.resources()['total'].items():
   print('{} : {}'.format(k,v))
   
-print('Empire planets:')
+print('\nEmpire planets:')
 for p in emp.planets():
-  print(p)
+  print('\t'+str(p))
 ```
 
 # output
